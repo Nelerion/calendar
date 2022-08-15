@@ -72,8 +72,8 @@ export const Days: React.FC<Props> = ({
   const findEventStyleDay = (thisDay: number) => {//Проверяю, есть ли евенты в во всеъ днях
     if (
       localStorageEventArray.find(
-        ({ day, month, year }) =>
-          day === thisDay && month === month && year === year
+        ({ day, month:thisMonth, year:thisYear }) =>
+          day === thisDay && month === thisMonth && year === thisYear
       )
     ) {
       return "ok";
