@@ -23,6 +23,7 @@ export const Header: React.FC<Props> = ({
   setAllDays,
   setYear,
   setMonth,
+  value,
 }) => {
   const date: MonthYear = {
     month: month,
@@ -53,7 +54,7 @@ export const Header: React.FC<Props> = ({
 
   return (
     <Header_block>
-      <EventText></EventText>
+      <EventText>{value}</EventText>
       <ChooseMonth onChange={changeMonth}>
         {monthName.map((allMonth: string,index:number) => (
           <option key={allMonth} selected={index===month?true:false}>{allMonth}</option>

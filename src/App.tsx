@@ -31,26 +31,46 @@ interface ILocalStorageEvent {
   event?: string;
 }
 export type Props = {
+  modal?: boolean;
   month: number;
   year: number;
   selectDay?: number;
   allDaysInMonth?: number;
   value?: string;
+  setValue?: (value: string | ((prevVar: string) => string)) => void;
+  localStorageEventArray?: ILocalStorageEvent[];
   setAllDays?: (value: number | ((prevVar: number) => number)) => void;
   setYear?: (value: number | ((prevVar: number) => number)) => void;
   setMonth?: (value: number | ((prevVar: number) => number)) => void;
   setModal?: (value: boolean | ((prevVar: boolean) => boolean)) => void;
   setSelectDay?: (value: number | ((prevVar: number) => number)) => void;
+  setLocalStorageEventArray?: (
+    value:
+      | Array<ILocalStorageEvent>
+      | ((prevVar: Array<ILocalStorageEvent>) => Array<ILocalStorageEvent>)
+  ) => void;
 };
+interface ILocalStorageEvent {
+  day?: number;
+  month?: number;
+  year?: number;
+  event?: string;
+}
+
 export type PropsModal = {
+  modal?: boolean;
   selectDay: number;
   month: number;
   year: number;
   value?: string;
-  
+  localStorageEventArray?: ILocalStorageEvent[];
   setModal: (value: boolean | ((prevVar: boolean) => boolean)) => void;
   setSelectDay?: (value: number | ((prevVar: number) => number)) => void;
-  setLocalStorageEventArray?: (value: Array<ILocalStorageEvent> | ((prevVar: Array<ILocalStorageEvent>) => Array<ILocalStorageEvent>)) => void;
+  setLocalStorageEventArray?: (
+    value:
+      | Array<ILocalStorageEvent>
+      | ((prevVar: Array<ILocalStorageEvent>) => Array<ILocalStorageEvent>)
+  ) => void;
 };
 
 const App: React.FC = () => {
@@ -66,6 +86,7 @@ const App: React.FC = () => {
   const [localStorageEventArray, setLocalStorageEventArray] = useState<
     ILocalStorageEvent[]
   >([]);
+
   useEffect(() => {
     setAllDays(new Date(year, month + 1, 0).getDate());
   }, [month, year]);
@@ -79,6 +100,9 @@ const App: React.FC = () => {
             year={year}
             month={month}
             selectDay={selectDay}
+            localStorageEventArray={localStorageEventArray}
+            setLocalStorageEventArray={setLocalStorageEventArray}
+            modal={modal}
           />
         ) : null}
         <Header
@@ -87,8 +111,11 @@ const App: React.FC = () => {
           setAllDays={setAllDays}
           setYear={setYear}
           setMonth={setMonth}
+          value={value}
         />
         <Days
+          setValue={setValue}
+          modal={modal}
           value={value}
           month={month}
           year={year}
@@ -96,6 +123,8 @@ const App: React.FC = () => {
           setModal={setModal}
           selectDay={selectDay}
           setSelectDay={setSelectDay}
+          setLocalStorageEventArray={setLocalStorageEventArray}
+          localStorageEventArray={localStorageEventArray}
         ></Days>
       </Calendar>
     </div>

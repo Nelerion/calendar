@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { Props } from "../../App";
-import { Year } from "../header/style";
 import { AllDaysInMonth, DaysBlock } from "./style";
-
-interface ILocalStorageEvent {
-  day?: number;
-  month?: number;
-  year?: number;
-  event?: string;
-}
 
 export const Days: React.FC<Props> = ({
   allDaysInMonth,
@@ -18,6 +10,10 @@ export const Days: React.FC<Props> = ({
   month,
   year,
   value,
+  setValue,
+  setLocalStorageEventArray,
+  localStorageEventArray,
+  modal
 }) => {
   const getAllDaysInMonth = () => {
     const arr: number[] = [];
@@ -27,15 +23,14 @@ export const Days: React.FC<Props> = ({
       }
     return arr;
   };
-
+  const isDate = new Date();
+  const [todayMonth, setTodayMonth] = useState<number>(Number(isDate.getMonth()));
+  const [todayYear, setTodayYears] = useState<number>(Number(isDate.getFullYear()));
   const [day, setDay] = useState(Number(new Date().getDate()));
   const ColorNowDay = (nowDay: number) => {
-    if (nowDay === day) return "ok";
+    if (nowDay === day&&year===todayYear&&month===todayMonth) return "ok";
   };
 
-  const [localStorageEventArray, setLocalStorageEventArray] = useState<
-    ILocalStorageEvent[]
-  >([]);
 
   const getAllLocalStorageEvent = (allDay: number) => {
     const local = JSON.parse(
@@ -55,35 +50,52 @@ export const Days: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    for (let i: number = 0; i < 31; i++) {
+    for (let i: number = 0; i <= 31; i++) {
       if (
         getAllLocalStorageEvent(i) !== undefined &&
         getAllLocalStorageEvent(i) !== null
       ) {
+        if(setLocalStorageEventArray!==undefined)
         setLocalStorageEventArray((prev) => [
           ...prev,
           getAllLocalStorageEvent(i),
         ]);
       }
     }
-  }, []);
+  }, [year,month,modal]);
+
+
 
 
   const findEventStyleDay = (thisDay: number) => {//Проверяю, есть ли евенты в во всеъ днях
+    if(localStorageEventArray!==undefined)
     if (
       localStorageEventArray.find(
-        ({ day, month:thisMonth, year:thisYear }) =>
-          day === thisDay && month === thisMonth && year === thisYear
+        ({ day: dayZ, month:thisMonth, year:thisYear }) =>
+          dayZ === thisDay && thisMonth=== month && thisYear === year
       )
     ) {
       return "ok";
     }
   };
 
+
+  const findEventText=(days:number)=>{
+    if(localStorageEventArray!==undefined)
+      localStorageEventArray.find(
+        ({ day: dayZ, month:thisMonth, year:thisYear,event }) =>
+        dayZ === days && thisMonth=== month && thisYear === year&&
+          setValue!==undefined&&
+     setValue(String(event))
+      )
+  }
+
   return (
     <DaysBlock>
       {getAllDaysInMonth().map((days: number) => (
         <AllDaysInMonth
+        onMouseMove={()=>findEventText(days)}
+        onMouseOut={(()=>setValue!==undefined&&setValue(''))}
           nowDay={ColorNowDay(days)}
           dayHaveEvent={findEventStyleDay(days)}
           onClick={() => openModalforCreateEvent(days)}
